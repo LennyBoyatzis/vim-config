@@ -26,13 +26,12 @@ Plug 'chrtoomey/vim-tmux-navigator'
 
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
-Plug 'flechie/vim-styled-components'
 
 " Auto Pairs (match pairs, delimimate alt)
 Plug 'jiangmiao/auto-pairs'
 
 " YouCompleteMe (with post install hook to compile for JS)
- Plug 'Valloric/YouCompleteMe', { 'do': './install.py --tern-completer' }
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --tern-completer' }
 
 " Neomake, asynchronous programs
 Plug 'neomake/neomake'
@@ -48,7 +47,7 @@ Plug 'kana/vim-operator-user'
 Plug 'haya14busa/vim-operator-flashy'
 
 " Vim file icons
-Plug 'ryanoas/vim-devicons'
+Plug 'ryanoasis/vim-devicons'
 
 " Commentary
 Plug 'tpope/vim-commentary'
@@ -61,6 +60,9 @@ Plug 'tpope/vim-surround'
 
 " Adds more text objects such as next and previous 
 Plug 'wellle/targets.vim'
+
+" Dracula theme 
+Plug 'dracula/vim'
 
 " Adds more text objects such as next and previous 
 Plug 'tpope/vim-repeat'
@@ -77,6 +79,17 @@ Plug 'nvie/vim-flake8'
 " fzf - fast searching
 Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 
+" Tmux navigator
+Plug 'christoomey/vim-tmux-navigator'
+
+" Replace with Register
+Plug 'ReplaceWithRegister'
+
+" Hard Mode  
+" Plug 'wikitopian/hardmode'
+
+" Motions specific to JS
+Plug 'okcompute/vim-javascript-motions'
 
 call plug#end()
 
@@ -87,11 +100,13 @@ call plug#end()
 " Syntax Highlighting
 
 syntax enable
-
 " Line Numbers
 
 set number
-set relativenumber
+" set relativenumber
+
+" JSX when in JS mode
+let g:jsx_ext_required = 0
 
 " Tabs
 set tabstop=2
@@ -141,10 +156,13 @@ set title
 " Enable creation and deletion of files in nerdtree (modifiable)
 set modifiable
 
+" Highlights the entire cursor line 
+set cursorline
+
 " Link python executable
 " https://github.com/neovim/neovim/sues/4535
-let g:python2_host_prog = '/usr/bin/python'
-let g:python3_host_prog = 'Users/lenny.boyatz/miniconda3/envs/python3/bin/python3.5'
+" let g:python2_host_prog = '/usr/bin/python'
+let g:python3_host_prog = 'Users/lenny.boyatzis/miniconda3/envs/python3/bin/python3.5'
 
 " Python Indentation - PEP 8 Stylin
 
@@ -153,12 +171,38 @@ let g:python3_host_prog = 'Users/lenny.boyatz/miniconda3/envs/python3/bin/python
 set encoding=utf-8
 
 let python_highlight_all=1
+let g:pymode_python = 'python3'
 
-" Automatically install plugins if they are listed above
-autocmd VimEnter *
-      \ if !empty(filter(copy(g:plugs), '!isdirectory(v:val.dir)'))
-        \| PlugInstall | q
-      \| endif
+"==========================
+" SYNTASTIC - ESLINT CONFIG
+" ========================
+
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_eslint_exe = 'npm run lint --'
+
+"==================
+" HARD MODE CONFIG
+"==================
+
+" Enable hard mode by default
+" autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
+
+" Disable hard mode on first key press for special buffer (like nerdTree)
+" autocmd VimEnter,BufNewFile,BufReadPost * if !strlen(&buftype) | silent! call HardMode() | endif
+
+"==================
+" ESLINT CONFIG
+" ================
+
+" Eslint config
+let g:syntastic_javascript_checkers = ['eslint']
 
 "==================
 " KEY BINDINGS
@@ -178,15 +222,21 @@ nnoremap x "_x
 nnoremap <Leader>q :Bdelete<CR>
 nnoremap <Tab> :bn<CR>
 nnoremap <S-Tab> :bp<CR>
-nnoremap <Leader>h <C-w>h
-nnoremap <Leader>j <C-w>j
-nnoremap <Leader>k <C-w>k
-nnoremap <Leader>l <C-w>l
+
+" Toggle Hard Mode
+nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
+
+" Resolve issue with <C-h>
+" see https://github.com/neovim/neovim/issues/2048
+if has('nvim')
+nmap <BS> <C-W>h
+endif
 
 "==================
 " THEME
 " ================
 
+set termguicolors
 if has("termguicolors")
  set termguicolors
 endif
@@ -209,6 +259,24 @@ autocmd FileType nerdtree nnoremap <buffer> <S-Tab> <nop>
 autocmd FileType nerdtree nnoremap <buffer> <C-q> :NERDTreeToggle<CR>
 autocmd FileType nerdtree nnoremap <buffer> <C-p> <nop>
 autocmd FileType nerdtree nnoremap <buffer> <Leader>p <nop>
+
+let NERDTreeIgnore = ['\.pyc$']
+
+"==================
+" Pymode
+" ================
+" let g:pymode = 1
+
+" let g:pymode_python = 'python3'
+
+" " Enable Pymode Motion - can move Functions, Classes and Methods
+" let g:pymode_motion = 1
+
+" " Enable breakpoint detection
+" let g:pymode_breakpoint = 1
+
+" " Run python code
+" let g:pymode_run_bind = '<leader>r'
 
 "==================
 " Airline
