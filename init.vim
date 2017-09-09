@@ -236,7 +236,6 @@ endif
 " THEME
 " ================
 
-set termguicolors
 if has("termguicolors")
  set termguicolors
 endif
